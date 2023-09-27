@@ -1,12 +1,17 @@
 "use client";
 
+import Footer from "./footer";
+import NavigationBar from "./navigation-bar";
+
 function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <div>NAVBAR</div>
-      <main>{children}</main>
-      <div>FOOTER</div>
-    </>
+    <div className="relative flex min-h-screen flex-col">
+      <NavigationBar></NavigationBar>
+      <div className="flex flex-1 overflow-x-hidden bg-background">
+        {children}
+      </div>
+      <Footer></Footer>
+    </div>
   );
 }
 
