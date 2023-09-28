@@ -1,9 +1,33 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# WWW-project
+
+You can find the website from https://www-project-red.vercel.app/
 
 ## Getting Started
 
-First, run the development server:
+First, install the package
 
+```bash
+npm install
+```
+
+After, set the environment variables.
+Example of env found from .env-example
+
+1) Clerk
+
+Sign in (or Sign up) for Clerk and create a new project in clerk dashboard (https://dashboard.clerk.com/)
+
+Set NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY to the .env
+
+2) Planetscale
+
+Create a new database in planetscale (https://planetscale.com/).
+
+Set DATABASE_URL to newly created database url.
+
+If you wish to use any other mysql database provider, you can modify the schema.prisma to your own database provider.
+
+Finally, run the development environment
 ```bash
 npm run dev
 # or
@@ -16,21 +40,23 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Modifying the database
 
-## Learn More
+You can modify the data schema from the schema.prisma file.
 
-To learn more about Next.js, take a look at the following resources:
+Then:
+```bash
+npx prisma db push
+npx prisma generate
+npm i
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Developer environment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+I recommend downloading these VSCode plugins:
 
-## Deploy on Vercel
+1) Prettier
+2) Tailwind CSS IntelliSense
+3) Prisma
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
