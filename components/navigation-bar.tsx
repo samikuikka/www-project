@@ -1,7 +1,13 @@
 "use client";
 
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
-import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 
 function NavigationBar() {
@@ -18,7 +24,9 @@ function NavigationBar() {
         </NavigationMenu.Item>
 
         <div className="flex-1"></div>
-        <SignedIn>signed in</SignedIn>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
         <SignedOut>
           <SignUpButton>
             <Button variant="ghost">Sign up</Button>
