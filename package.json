@@ -16,6 +16,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "dayjs": "^1.11.10",
     "lucide-react": "^0.279.0",
     "next": "latest",
     "prisma": "^5.3.1",

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import type { Post } from "@prisma/client";
 
+// TODO All posts page
+
 export default function Posts() {
   const [posts, setPosts] = useState<Post[]>([]);
 

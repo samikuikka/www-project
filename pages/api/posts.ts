@@ -15,13 +15,22 @@ export default async function handler(
 
 async function GET(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { userId } = getAuth(req);
-    if (!userId) {
+    const { userId: authenticatedUserId } = getAuth(req);
+    const { userId } = req.query;
+    if (!authenticatedUserId) {
       return res.status(401).json({ error: "Not authenticated" });
     }
 
+    if (userId && typeof userId !== "string") {
+      return res.status(400).json({ error: "Invalid user id" });
+    }
+
     // Retrieves all posts from the database
-    const posts = await db.post.findMany({});
+    const posts = await db.post.findMany({
+      where: {
+        ...(userId && { authorId: userId }),
+      },
+    });
 
     return res.status(200).json(posts);
   } catch {
