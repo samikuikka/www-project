@@ -16,13 +16,17 @@ export default async function handler(
 async function GET(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { userId: authenticatedUserId } = getAuth(req);
-    const { userId, skip } = req.query;
+    const { userId, skip, title } = req.query;
     if (!authenticatedUserId) {
       return res.status(401).json({ error: "Not authenticated" });
     }
 
     if (userId && typeof userId !== "string") {
       return res.status(400).json({ error: "Invalid user id" });
+    }
+
+    if (title && typeof title !== "string") {
+      return res.status(400).json({ error: "Invalid title" });
     }
 
     let skipNumber = 0;
@@ -41,6 +45,7 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
     const posts = await db.post.findMany({
       where: {
         ...(userId && { authorId: userId }),
+        ...(title && { title: { contains: title } }),
       },
       take: 10,
       skip: skipNumber,
@@ -49,7 +54,12 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
       },
     });
 
-    const count = await db.post.count();
+    const count = await db.post.count({
+      where: {
+        ...(userId && { authorId: userId }),
+        ...(title && { title: { contains: title } }),
+      },
+    });
 
     const response = {
       data: posts,

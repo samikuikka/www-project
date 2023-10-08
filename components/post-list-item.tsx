@@ -24,7 +24,7 @@ const PostListItem: React.FC<PostListItemProps> = ({ post }) => {
       </div>
 
       <div className="h-full flex-auto overflow-hidden">
-        <div className=" h-full w-full overflow-hidden text-ellipsis ">
+        <div className=" h-full max-h-10 w-full overflow-hidden text-ellipsis text-sm">
           {post.content.length > 150
             ? post.content.substring(0, 150) + "..."
             : post.content}
