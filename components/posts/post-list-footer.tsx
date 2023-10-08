@@ -6,10 +6,11 @@ interface PostListFooterProps {
   count: number;
 }
 
-const PostListFooter: React.FC<PostListFooterProps> = ({ count }) => {
+export const PagesPostListFooter: React.FC<PostListFooterProps> = ({
+  count,
+}) => {
   const router = useRouter();
   const { createQueryString } = useQueryString();
-
   function previousPage() {
     const skip = (Number(router.query.skip) || 0) - 10;
     router.push(`?${createQueryString("skip", skip.toString())}`);
@@ -50,5 +51,3 @@ const PostListFooter: React.FC<PostListFooterProps> = ({ count }) => {
     </div>
   );
 };
-
-export default PostListFooter;

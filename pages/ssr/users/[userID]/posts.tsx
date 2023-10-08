@@ -1,6 +1,6 @@
-import PostListFooter from "@/components/posts/post-list-footer";
-import PostListHeader from "@/components/posts/post-list-header";
-import PostListItem from "@/components/posts/post-list-item";
+import { PagesPostListFooter } from "@/components/posts/post-list-footer";
+import { PagesPostListHeader } from "@/components/posts/post-list-header";
+import { PagesPostListItem } from "@/components/posts/post-list-item";
 import { db } from "@/lib/db";
 import { Post } from "@prisma/client";
 import { GetServerSideProps } from "next";
@@ -63,14 +63,14 @@ export default function Posts({
   return (
     <div className="flex h-full w-full flex-col items-center justify-center px-0 py-10 sm:px-10 ">
       <div className="w-full  max-w-5xl rounded-md border-2 border-border ">
-        <PostListHeader />
+        <PagesPostListHeader />
         <ul className="  w-full ">
           {posts.map((post) => (
-            <PostListItem key={post.id} post={post} />
+            <PagesPostListItem key={post.id} post={post} />
           ))}
         </ul>
       </div>
-      <PostListFooter count={count} />
+      <PagesPostListFooter count={count} />
     </div>
   );
 }

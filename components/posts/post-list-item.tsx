@@ -4,16 +4,42 @@ import type { Post } from "@prisma/client";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useRouter } from "next/router";
+import { useRouter as useAppRouter, usePathname } from "next/navigation";
 dayjs.extend(relativeTime);
 
-interface PostListItemProps {
+interface PostListItemWrapperProps {
   post: Post;
 }
 
-const PostListItem: React.FC<PostListItemProps> = ({ post }) => {
+export const PagesPostListItem: React.FC<PostListItemWrapperProps> = ({
+  post,
+}) => {
   const router = useRouter();
   const { asPath } = router;
 
+  return <PostListItem post={post} router={router} asPath={asPath} />;
+};
+
+export const AppPostListItem: React.FC<PostListItemWrapperProps> = ({
+  post,
+}) => {
+  const router = useAppRouter();
+  const asPath = usePathname() || "";
+
+  return <PostListItem post={post} router={router} asPath={asPath} />;
+};
+
+interface PostListItemProps {
+  post: Post;
+  router: any;
+  asPath: string;
+}
+
+const PostListItem: React.FC<PostListItemProps> = ({
+  post,
+  router,
+  asPath,
+}) => {
   // Split the route path and get the first segment
   const firstSegment = asPath.split("/")[1];
 
@@ -43,5 +69,3 @@ const PostListItem: React.FC<PostListItemProps> = ({ post }) => {
     </li>
   );
 };
-
-export default PostListItem;
