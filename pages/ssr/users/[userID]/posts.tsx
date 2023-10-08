@@ -4,34 +4,39 @@ import { PagesPostListItem } from "@/components/posts/post-list-item";
 import { db } from "@/lib/db";
 import { Post } from "@prisma/client";
 import { GetServerSideProps } from "next";
+import { z } from "zod";
+
+const searchParamSchema = z.object({
+  userID: z.string(),
+  title: z.string().optional(),
+  skip: z.coerce.number().min(0).optional(),
+  language: z.string().optional(),
+});
 
 export const getServerSideProps = (async (context) => {
   const { query } = context;
-  const { userID, skip, title, language } = query;
 
-  if (!userID || typeof userID !== "string")
-    throw new Error("User ID is required");
-  if (title && typeof title !== "string")
-    throw new Error("Title must be a string");
-  if (language && typeof language !== "string")
-    throw new Error("Language must be a string");
+  const validatedSearchParams = searchParamSchema.safeParse(query);
+  if (!validatedSearchParams.success) {
+    throw new Error("Invalid query params");
+  }
+  const {
+    title: validTitle,
+    skip: validSkip,
+    language: validLanguage,
+    userID: validUserID,
+  } = validatedSearchParams.data;
 
   let skipNumber = 0;
-  if (skip && typeof skip !== "string") {
-    throw new Error("Skip must be a number");
-  }
-  if (skip && (Number.isNaN(Number(skip)) || Number(skip) < 0)) {
-    throw new Error("Skip must be a positive number");
-  }
-  if (skip && !Number.isNaN(Number(skip))) {
-    skipNumber = Number(skip);
+  if (validSkip) {
+    skipNumber = Number(validSkip);
   }
 
   const posts = await db.post.findMany({
     where: {
-      ...(userID && { authorId: userID }),
-      ...(title && { title: { contains: title } }),
-      ...(language && { language: { equals: language } }),
+      ...(validUserID && { authorId: validUserID }),
+      ...(validTitle && { title: { contains: validTitle } }),
+      ...(validLanguage && { language: { equals: validLanguage } }),
     },
     take: 10,
     skip: skipNumber,
@@ -42,9 +47,9 @@ export const getServerSideProps = (async (context) => {
 
   const count = await db.post.count({
     where: {
-      ...(userID && { authorId: userID }),
-      ...(title && { title: { contains: title } }),
-      ...(language && { language: { equals: language } }),
+      ...(validUserID && { authorId: validUserID }),
+      ...(validTitle && { title: { contains: validTitle } }),
+      ...(validLanguage && { language: { equals: validLanguage } }),
     },
   });
   const serializedPosts = posts.map((p) => {
