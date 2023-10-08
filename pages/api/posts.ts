@@ -16,7 +16,7 @@ export default async function handler(
 async function GET(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { userId: authenticatedUserId } = getAuth(req);
-    const { userId } = req.query;
+    const { userId, skip } = req.query;
     if (!authenticatedUserId) {
       return res.status(401).json({ error: "Not authenticated" });
     }
@@ -25,14 +25,39 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
       return res.status(400).json({ error: "Invalid user id" });
     }
 
+    let skipNumber = 0;
+    if (
+      (skip && typeof skip !== "string") ||
+      Number.isNaN(Number(skip)) ||
+      Number(skip) < 0
+    ) {
+      return res.status(400).json({ error: "Invalid skip value" });
+    }
+    if (skip && !Number.isNaN(Number(skip))) {
+      skipNumber = Number(skip);
+    }
+
     // Retrieves all posts from the database
     const posts = await db.post.findMany({
       where: {
         ...(userId && { authorId: userId }),
       },
+      take: 10,
+      skip: skipNumber,
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
-    return res.status(200).json(posts);
+    const count = await db.post.count();
+
+    const response = {
+      data: posts,
+      count,
+      skip: skipNumber + 10,
+    };
+
+    return res.status(200).json(response);
   } catch {
     return res.status(500).json({ error: "Something went wrong" });
   }
