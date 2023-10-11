@@ -5,6 +5,8 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useRouter } from "next/router";
 import { useRouter as useAppRouter, usePathname } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 dayjs.extend(relativeTime);
 
 interface PostListItemWrapperProps {
@@ -46,7 +48,7 @@ const PostListItem: React.FC<PostListItemProps> = ({
   return (
     <li
       onDoubleClick={() => router.push(`/${firstSegment}/posts/${post.id}`)}
-      className="last-rounded-b-md box-border flex h-[100px] w-full  cursor-pointer flex-col border border-input border-x-transparent bg-card px-1.5 text-card-foreground first:rounded-t-md hover:bg-accent/70 md:px-6"
+      className="last-rounded-b-md box-border flex h-[140px] w-full  cursor-pointer flex-col border border-input border-x-transparent bg-card px-1.5 text-card-foreground first:rounded-t-md hover:bg-accent/70 md:px-6"
     >
       <div className="flex h-12 w-full flex-shrink-0 flex-grow-0 flex-col items-center md:h-10 ">
         <div className="flex w-full flex-col items-center md:flex-row">
@@ -65,6 +67,20 @@ const PostListItem: React.FC<PostListItemProps> = ({
             ? post.content.substring(0, 150) + "..."
             : post.content}
         </div>
+      </div>
+
+      <div className="flex h-12 shrink-0 items-center gap-2">
+        <Avatar>
+          <AvatarImage src={post.profileImageUrl ?? undefined} />
+          <AvatarFallback>
+            {post.username
+              ? post.username.slice(0, 2).toUpperCase()
+              : post.authorId.slice(0, 2).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        <p className="text-muted-foregound truncate text-xs">
+          {post.username ?? post.authorId}
+        </p>
       </div>
     </li>
   );
