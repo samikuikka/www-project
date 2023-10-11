@@ -19,6 +19,7 @@ import {
   NavigationMenuTrigger,
 } from "./ui/navigation-menu";
 import { cn } from "@/lib/utils";
+import { dark } from "@clerk/themes";
 
 function NavigationBar() {
   const { userId } = useAuth();
@@ -44,6 +45,9 @@ function NavigationBar() {
                     >
                       CSR page for showing all of my posts
                     </ListItem>
+                    <ListItem title="All posts" href={`/csr/posts`}>
+                      All posts page
+                    </ListItem>
                     <ListItem title="Test page" href={`/csr/test`}>
                       CSR test page
                     </ListItem>
@@ -61,6 +65,9 @@ function NavigationBar() {
                       href={`/ssr/users/${userId}/posts`}
                     >
                       SSR page for showing all of my posts
+                    </ListItem>
+                    <ListItem title="All posts" href={`/ssr/posts`}>
+                      All posts page
                     </ListItem>
                     <ListItem title="Test page" href={`/csr/test`}>
                       SSR test page
@@ -80,6 +87,9 @@ function NavigationBar() {
                     >
                       RSC page for showing all of my posts
                     </ListItem>
+                    <ListItem title="All posts" href={`/rsc/posts`}>
+                      All posts page
+                    </ListItem>
                     <ListItem title="Test page" href={`/csr/test`}>
                       RSC test
                     </ListItem>
@@ -92,7 +102,11 @@ function NavigationBar() {
       </NavigationMenu>
       <div className="flex-1"></div>
       <SignedIn>
-        <UserButton />
+        <UserButton
+          appearance={{
+            baseTheme: dark,
+          }}
+        />
       </SignedIn>
       <SignedOut>
         <SignUpButton>
