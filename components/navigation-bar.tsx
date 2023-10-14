@@ -25,7 +25,7 @@ function NavigationBar() {
   const { userId } = useAuth();
 
   return (
-    <div className="sticky top-0 flex h-14 w-full  items-center justify-between border border-x-transparent border-b-border border-t-background bg-background/95 px-4">
+    <div className="sticky top-0 z-[100] flex h-14 w-full  items-center justify-between border border-x-transparent border-b-border border-t-background bg-background/95 px-4">
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem className="pr-4">
