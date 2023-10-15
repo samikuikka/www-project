@@ -10,19 +10,22 @@ import {
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@clerk/nextjs";
+import { Annotation } from "@prisma/client";
+import { PostWithAnnotations } from "@/models/post-model";
 
 interface PostContentAreaProps {
-  content: string;
-  postId: string;
+  post: PostWithAnnotations;
 }
 
-const PostContentArea: React.FC<PostContentAreaProps> = ({
-  content,
-  postId,
-}) => {
+const PostContentArea: React.FC<PostContentAreaProps> = ({ post }) => {
   const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
   const [buttonVisible, setButtonVisible] = useState(false);
   const [selection, setSelection] = useState({ start: -1, end: -1 });
+  const [annotations, setAnnotations] = useState<Annotation[]>(
+    post.annotations,
+  );
+  const [comment, setComment] = useState("");
+  const [open, setOpen] = useState(false);
   const { userId } = useAuth();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -45,11 +48,12 @@ const PostContentArea: React.FC<PostContentAreaProps> = ({
     startOffset: number = 0,
   ) => {
     const selection = window.getSelection();
-    if (!selection || !divRef) return;
 
+    if (!selection || !divRef) return;
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current!);
     }
+
     const highlightedText = selection.toString();
     if (!highlightedText) {
       resetSelection();
@@ -61,15 +65,36 @@ const PostContentArea: React.FC<PostContentAreaProps> = ({
     const divRange = divRef.current?.getBoundingClientRect();
     const rect = range.getBoundingClientRect();
 
-    const start = range.startOffset + (startOffset ?? 0);
+    const pOffset = getParentOffset(range, selection);
+    const start = range.startOffset + (startOffset ?? 0) + pOffset;
     const firstIndex = offset + section.indexOf(highlightedText, start);
-    const lastIndex = firstIndex + highlightedText.length;
+    const lastIndex = firstIndex + highlightedText.length - 1;
 
-    if (firstIndex < offset || lastIndex > offset + section.length) {
+    console.log(
+      annotations.some(
+        (annotation) =>
+          (annotation.start >= firstIndex && annotation.start <= lastIndex) ||
+          (annotation.end >= firstIndex && annotation.end <= lastIndex),
+      ),
+    );
+    if (
+      firstIndex < offset ||
+      lastIndex > offset + section.length ||
+      annotations.some(
+        (annotation) =>
+          (annotation.start >= firstIndex && annotation.start <= lastIndex) ||
+          (annotation.end >= firstIndex && annotation.end <= lastIndex),
+      )
+    ) {
       resetSelection();
       return;
     }
 
+    setSelection({ start: firstIndex, end: lastIndex });
+    setButtonPositionFromSelection(rect, divRange);
+  };
+
+  function setButtonPositionFromSelection(rect: DOMRect, divRange?: DOMRect) {
     // Calculate the position of the button
     const top = rect.top - (divRange?.top ?? 0) - 45;
     const toLeft = rect.left - (divRange?.left ?? 0);
@@ -77,36 +102,109 @@ const PostContentArea: React.FC<PostContentAreaProps> = ({
 
     setButtonPosition({ top, left });
     setButtonVisible(true);
-    setSelection({ start: firstIndex, end: lastIndex });
 
     timeoutRef.current = setTimeout(() => {
       setButtonVisible(false);
-    }, 5000); // Adjust the timeout duration as needed
-  };
+    }, 5000);
+  }
 
-  function sendAnnotation({
-    start,
-    end,
-    text,
-  }: {
-    start: number;
-    end: number;
-    text: string;
-  }) {
+  function getParentOffset(range: Range, textSelection: Selection): number {
+    let pNode = range.startContainer;
+    while (pNode?.nodeName !== "P") {
+      if (!pNode) return 0;
+      pNode = pNode.parentNode!;
+    }
+
+    let pOffset = 0;
+    for (let i = 0; i < pNode.childNodes.length; i++) {
+      if (textSelection.containsNode(pNode.childNodes[i], true)) break;
+      pOffset += pNode.childNodes[i].textContent?.length ?? 0;
+    }
+    return pOffset;
+  }
+
+  function showSection(item: { data: string; offset: number }, index: number) {
+    const annotationsArray: Pick<Annotation, "start" | "end">[] =
+      annotations.filter(
+        (annotation) =>
+          annotation.start >= item.offset &&
+          annotation.end <= item.offset + item.data.length,
+      );
+
+    const annotatedText = [];
+    if (
+      selection.start >= item.offset &&
+      selection.end <= item.offset + item.data.length
+    ) {
+      annotationsArray.push({ start: selection.start, end: selection.end });
+    }
+    const sortedAnnotations = annotationsArray.sort(
+      (a, b) => a.start - b.start,
+    );
+
+    if (sortedAnnotations.length === 0) {
+      return (
+        <p key={index} onClick={() => handleSelection(item.data, item.offset)}>
+          {item.data}
+        </p>
+      );
+    } else {
+      let lastEnd = 0;
+      for (let i = 0; i < sortedAnnotations.length; i++) {
+        const annotation = sortedAnnotations[i];
+        const before = item.data.slice(lastEnd, annotation.start - item.offset);
+        const selected = item.data.slice(
+          annotation.start - item.offset,
+          annotation.end - item.offset + 1,
+        );
+        annotatedText.push(before);
+        annotatedText.push(
+          <span key={i} className="bg-destructive text-destructive-foreground">
+            {selected}
+          </span>,
+        );
+        lastEnd = annotation.end - item.offset + 1;
+      }
+      annotatedText.push(item.data.slice(lastEnd));
+
+      return (
+        <p key={index} onClick={() => handleSelection(item.data, item.offset)}>
+          {annotatedText}
+        </p>
+      );
+    }
+  }
+
+  async function postAnnotation() {
     try {
       if (!userId) return;
 
       const annotation = {
-        start: start,
-        end: end,
-        text: text,
-        postId: postId,
+        start: selection.start,
+        end: selection.end,
+        postId: post.id,
         userId: userId,
+        content: comment,
       };
+
+      const response = await fetch("/api/annotations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(annotation),
+      });
+      const data = await response.json();
+      setAnnotations([...annotations, data]);
+      resetSelection();
     } catch {}
+
+    setOpen(false);
+    setComment("");
   }
 
   function onButtonClick() {
+    setOpen(true);
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current!);
     }
@@ -121,9 +219,10 @@ const PostContentArea: React.FC<PostContentAreaProps> = ({
   function resetSelection() {
     setButtonVisible(false);
     setSelection({ start: -1, end: -1 });
+    setOpen(false);
   }
 
-  const contents = content.replace(/\\n/g, "\n").split("\n");
+  const contents = post.content.replace(/\\n/g, "\n").split("\n");
   const reducedLengths = contents.reduce(
     (acc, curr) => {
       acc.push(acc[acc.length - 1] + curr.length + 2);
@@ -137,7 +236,7 @@ const PostContentArea: React.FC<PostContentAreaProps> = ({
 
   return (
     <div className="relative h-full w-full" ref={divRef}>
-      <Popover onOpenChange={onOpenChange}>
+      <Popover open={open} onOpenChange={onOpenChange}>
         <PopoverTrigger asChild>
           <Button
             style={{
@@ -157,66 +256,18 @@ const PostContentArea: React.FC<PostContentAreaProps> = ({
         <PopoverContent side="top" sideOffset={-40} className=" w-80">
           <div className=" flex w-full max-w-xs flex-col">
             <h1>Comment</h1>
-            <Textarea className=" resize-none" />
+            <Textarea
+              className=" resize-none"
+              onChange={(e) => setComment(e.target.value)}
+            />
             <div className="flex justify-end gap-2 pt-4">
-              <Button>Submit</Button>
+              <Button onClick={postAnnotation}>Submit</Button>
             </div>
           </div>
         </PopoverContent>
       </Popover>
 
-      {contentsWithOffset.map(function (item, index) {
-        if (
-          selection.start >= item.offset &&
-          selection.end <= item.offset + item.data.length
-        ) {
-          const before = item.data.slice(0, selection.start - item.offset);
-          const selected = item.data.slice(
-            selection.start - item.offset,
-            selection.end - item.offset + 1,
-          );
-          const after = item.data.slice(selection.end - item.offset + 1);
-          return (
-            <p key={index} className="mb-2">
-              <span
-                onMouseUp={() => handleSelection(item.data, item.offset, 0)}
-              >
-                {before}
-              </span>
-              <span
-                className="bg-destructive text-destructive-foreground"
-                onMouseUp={() =>
-                  handleSelection(item.data, item.offset, before.length)
-                }
-              >
-                {selected}
-              </span>
-              <span
-                onMouseUp={() =>
-                  handleSelection(
-                    item.data,
-                    item.offset,
-                    before.length + selected.length,
-                  )
-                }
-              >
-                {after}
-              </span>
-            </p>
-          );
-        } else {
-          return (
-            <p
-              key={index}
-              onMouseUp={() => handleSelection(item.data, item.offset)}
-              className="mb-2"
-            >
-              {item.data}
-              <br />
-            </p>
-          );
-        }
-      })}
+      {contentsWithOffset.map(showSection)}
     </div>
   );
 };

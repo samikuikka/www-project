@@ -1,11 +1,11 @@
 import PostContentArea from "@/components/posts/post-content-area";
-import type { Post } from "@prisma/client";
+import { PostWithAnnotations } from "@/models/post-model";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 const PostPage = () => {
   const router = useRouter();
-  const [post, setPost] = useState<Post | null>(null);
+  const [post, setPost] = useState<PostWithAnnotations | null>(null);
 
   useEffect(() => {
     if (!router.query.id) return;
@@ -48,7 +48,7 @@ const PostPage = () => {
           </div>
 
           <div className="h-full w-full px-20 py-10 text-lg text-foreground">
-            <PostContentArea content={post.content} postId={post.id} />
+            <PostContentArea post={post} />
           </div>
         </div>
       </div>

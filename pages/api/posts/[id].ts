@@ -24,6 +24,9 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
       where: {
         id: id,
       },
+      include: {
+        annotations: true,
+      },
     });
 
     if (!post) {
