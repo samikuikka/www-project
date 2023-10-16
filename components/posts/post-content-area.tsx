@@ -11,7 +11,11 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@clerk/nextjs";
 import { Annotation } from "@prisma/client";
-import { PostWithAnnotations } from "@/models/post-model";
+import { AnnotationType, PostWithAnnotations } from "@/models/post-model";
+import { Separator } from "@/components/ui/separator";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 
 interface PostContentAreaProps {
   post: PostWithAnnotations;
@@ -70,20 +74,14 @@ const PostContentArea: React.FC<PostContentAreaProps> = ({ post }) => {
     const firstIndex = offset + section.indexOf(highlightedText, start);
     const lastIndex = firstIndex + highlightedText.length - 1;
 
-    console.log(
-      annotations.some(
-        (annotation) =>
-          (annotation.start >= firstIndex && annotation.start <= lastIndex) ||
-          (annotation.end >= firstIndex && annotation.end <= lastIndex),
-      ),
-    );
     if (
       firstIndex < offset ||
       lastIndex > offset + section.length ||
       annotations.some(
         (annotation) =>
           (annotation.start >= firstIndex && annotation.start <= lastIndex) ||
-          (annotation.end >= firstIndex && annotation.end <= lastIndex),
+          (annotation.end >= firstIndex && annotation.end <= lastIndex) ||
+          (firstIndex >= annotation.start && lastIndex <= annotation.end),
       )
     ) {
       resetSelection();
@@ -124,8 +122,11 @@ const PostContentArea: React.FC<PostContentAreaProps> = ({ post }) => {
   }
 
   function showSection(item: { data: string; offset: number }, index: number) {
-    const annotationsArray: Pick<Annotation, "start" | "end">[] =
-      annotations.filter(
+    const annotationsArray: AnnotationType[] = annotations
+      .map((a) => {
+        return { ...a, type: "annotation" } as AnnotationType;
+      })
+      .filter(
         (annotation) =>
           annotation.start >= item.offset &&
           annotation.end <= item.offset + item.data.length,
@@ -136,7 +137,11 @@ const PostContentArea: React.FC<PostContentAreaProps> = ({ post }) => {
       selection.start >= item.offset &&
       selection.end <= item.offset + item.data.length
     ) {
-      annotationsArray.push({ start: selection.start, end: selection.end });
+      annotationsArray.push({
+        start: selection.start,
+        end: selection.end,
+        type: "selection",
+      });
     }
     const sortedAnnotations = annotationsArray.sort(
       (a, b) => a.start - b.start,
@@ -159,9 +164,36 @@ const PostContentArea: React.FC<PostContentAreaProps> = ({ post }) => {
         );
         annotatedText.push(before);
         annotatedText.push(
-          <span key={i} className="bg-destructive text-destructive-foreground">
-            {selected}
-          </span>,
+          <Popover key={i}>
+            <PopoverTrigger asChild>
+              <span className="cursor-pointer whitespace-pre-wrap bg-destructive/80 text-destructive-foreground [-webkit-appearance:none] hover:bg-destructive">
+                {selected}
+              </span>
+            </PopoverTrigger>
+            {annotation.type === "annotation" && (
+              <PopoverContent side="top" className=" w-[400px]">
+                <div className="w-full ">
+                  <div className="pb-2 text-center">
+                    <span className="bg-destructive text-destructive-foreground">
+                      {selected}
+                    </span>
+                  </div>
+                  <Separator />
+
+                  <div className="w-full p-4">
+                    <div className="w-full text-xs text-foreground">
+                      {annotation.authorId}
+                    </div>
+                    <div className="pb-3 text-xs text-muted-foreground">
+                      {dayjs(annotation.createdAt).fromNow()}
+                    </div>
+
+                    <p>&quot;{annotation.content}&quot;</p>
+                  </div>
+                </div>
+              </PopoverContent>
+            )}
+          </Popover>,
         );
         lastEnd = annotation.end - item.offset + 1;
       }
