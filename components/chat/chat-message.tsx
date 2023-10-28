@@ -60,10 +60,13 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       key={message.id}
       className="flex w-full flex-row justify-between gap-3 border border-border bg-background p-2"
     >
-      <div className="flex w-full flex-col gap-2">
-        <p className="text-sm font-semibold">{message.authorId}</p>
+      <div className="flex w-full flex-col gap-2 truncate">
+        <p className="truncate text-sm font-semibold">{message.authorId}</p>
         {editMode ? (
-          <form onSubmit={submitMessage} className="flex w-full flex-col gap-2">
+          <form
+            onSubmit={submitMessage}
+            className="flex w-full shrink-0 flex-col gap-2"
+          >
             <Textarea name="message" defaultValue={textContent} />
             <div className="flex justify-end gap-2">
               <Button
@@ -91,7 +94,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">
-                <Settings />
+                <Settings className="w-10 shrink-0" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
