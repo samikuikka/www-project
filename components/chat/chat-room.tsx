@@ -41,7 +41,6 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ room }) => {
   const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
     let text = event.currentTarget.message.value;
-    console.log(text);
     if (text?.trim()) {
       text = text.replace(/\n/g, "<br>");
       socket.send(JSON.stringify({ type: "new", text }));

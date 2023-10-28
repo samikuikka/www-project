@@ -72,7 +72,6 @@ export default class ChatRoomServer implements Party.Server {
   }
 
   async onRequest(req: Party.Request) {
-    console.log("onRequest", req.method);
     return json({ message: "Hello, world!" });
   }
 
