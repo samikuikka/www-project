@@ -33,7 +33,7 @@ export default async function Posts({ params }: { params: { id: string } }) {
             </p>
           </div>
 
-          <div className="h-full w-full px-20 py-10 text-lg text-foreground">
+          <div className="h-full w-full px-3  py-10  text-lg text-foreground md:px-20">
             <PostContentArea post={post} />
           </div>
         </div>

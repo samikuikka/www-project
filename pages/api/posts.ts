@@ -17,6 +17,7 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { userId: authenticatedUserId } = getAuth(req);
     const { userID, skip, title, language } = req.query;
+
     if (!authenticatedUserId) {
       return res.status(401).json({ error: "Not authenticated" });
     }

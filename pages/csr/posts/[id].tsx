@@ -1,3 +1,4 @@
+import ChatRoom from "@/components/chat/chat-room";
 import PostContentArea from "@/components/posts/post-content-area";
 import { PostWithAnnotations } from "@/models/post-model";
 import { useRouter } from "next/router";
@@ -33,7 +34,7 @@ const PostPage = () => {
 
   return (
     <div className="flex w-full  overflow-hidden">
-      <div className="flex h-full w-full items-center justify-center p-4 md:p-10">
+      <div className="flex h-full w-full flex-col items-center justify-center p-4 md:p-10">
         <div className="h-full w-full max-w-6xl rounded border border-border">
           <div className="flex w-full flex-col gap-2 py-5">
             <h1 className="w-full text-center text-2xl sm:text-3xl md:text-5xl ">
@@ -47,10 +48,11 @@ const PostPage = () => {
             </p>
           </div>
 
-          <div className="h-full w-full px-20 py-10 text-lg text-foreground">
+          <div className="h-full w-full px-3 py-10 text-lg text-foreground md:px-20">
             <PostContentArea post={post} />
           </div>
         </div>
+        <ChatRoom room={post.id} />
       </div>
     </div>
   );
