@@ -13,13 +13,13 @@ npm install
 After, set the environment variables.
 Example of env found from .env-example
 
-1) Clerk
+1. Clerk
 
 Sign in (or Sign up) for Clerk and create a new project in clerk dashboard (https://dashboard.clerk.com/)
 
 Set NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY to the .env
 
-2) Planetscale
+2. Planetscale
 
 Create a new database in planetscale (https://planetscale.com/).
 
@@ -28,6 +28,7 @@ Set DATABASE_URL to newly created database url.
 If you wish to use any other mysql database provider, you can modify the schema.prisma to your own database provider.
 
 Finally, run the development environment
+
 ```bash
 npm run dev
 # or
@@ -40,12 +41,12 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-
 ## Modifying the database
 
 You can modify the data schema from the schema.prisma file.
 
 Then:
+
 ```bash
 npx prisma db push
 npx prisma generate
@@ -56,7 +57,16 @@ npm i
 
 I recommend downloading these VSCode plugins:
 
-1) Prettier
-2) Tailwind CSS IntelliSense
-3) Prisma
+1. Prettier
+2. Tailwind CSS IntelliSense
+3. Prisma
 
+## Partykit
+
+In order to use chat in development environment, start partykit in developer mode
+
+```bash
+npx partykit dev
+```
+
+More info found here https://docs.partykit.io/quickstart/
