@@ -15,7 +15,9 @@ import { AnnotationType, PostWithAnnotations } from "@/models/post-model";
 import { Separator } from "@/components/ui/separator";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import addToastOnRequestCompletion from "@/helpers/add-toast-on-request-completion";
 dayjs.extend(relativeTime);
+import { useToast } from "@/components/ui/toast/use-toast"
 
 interface PostContentAreaProps {
   post: PostWithAnnotations;
@@ -32,6 +34,7 @@ const PostContentArea: React.FC<PostContentAreaProps> = ({ post }) => {
   const [open, setOpen] = useState(false);
   const { userId } = useAuth();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const { toast } = useToast();
 
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -226,10 +229,11 @@ const PostContentArea: React.FC<PostContentAreaProps> = ({ post }) => {
         },
         body: JSON.stringify(annotation),
       });
+      addToastOnRequestCompletion({ response, errorMsg: "Adding notation failed, please try again later", successMsg: "Adding notation successful", toast })
       const data = await response.json();
       setAnnotations([...annotations, data]);
       resetSelection();
-    } catch {}
+    } catch { }
 
     setOpen(false);
     setComment("");
