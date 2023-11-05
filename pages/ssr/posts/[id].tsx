@@ -1,6 +1,7 @@
 import PostContentArea from "@/components/posts/post-content-area";
 import { db } from "@/lib/db";
 import { PostWithAnnotations } from "@/models/post-model";
+import ChatRoom from "@/components/chat/chat-room";
 import { GetServerSideProps } from "next";
 
 type SuccessPost = {
@@ -58,7 +59,7 @@ export default function Posts(prop: PostStatus) {
 
   return (
     <div className="flex w-full  overflow-hidden">
-      <div className="flex h-full w-full items-center justify-center p-4 md:p-10">
+      <div className="flex h-full w-full flex-col items-center justify-center p-4 md:p-10">
         <div className="h-full w-full max-w-6xl rounded border border-border">
           <div className="flex w-full flex-col gap-2 py-5">
             <h1 className="w-full text-center text-2xl sm:text-3xl md:text-5xl ">
@@ -76,6 +77,7 @@ export default function Posts(prop: PostStatus) {
             <PostContentArea post={post} />
           </div>
         </div>
+        <ChatRoom room={post.id} />
       </div>
     </div>
   );

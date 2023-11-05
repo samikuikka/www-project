@@ -2,6 +2,8 @@
 
 import Footer from "./footer";
 import NavigationBar from "./navigation-bar";
+import { Toaster } from "@/components/ui/toast/toaster"
+
 
 function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -11,6 +13,7 @@ function Layout({ children }: { children: React.ReactNode }) {
         {children}
       </div>
       <Footer></Footer>
+      <Toaster />
     </div>
   );
 }
