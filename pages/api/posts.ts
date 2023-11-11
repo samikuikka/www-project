@@ -8,6 +8,8 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     return GET(req, res);
+  } else if (req.method === "POST") {
+    return POST(req, res)
   } else {
     return res.status(405).json({ message: "Method not allowed" });
   }
@@ -76,6 +78,51 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
     };
 
     return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+}
+
+
+async function POST(req: NextApiRequest, res: NextApiResponse) {
+  try {
+    const { userId: authenticatedUserId } = getAuth(req);
+    if (!authenticatedUserId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    if (authenticatedUserId && typeof authenticatedUserId !== "string") {
+      return res.status(400).json({ error: "Invalid user id" });
+    }
+    // TODO: get data to the new post from request
+    //console.log(req.body)
+    const reqdata = await req.body
+    //console.log(reqdata)
+
+    // Create a new Post to the database
+    const newpost = await db.post.create({
+      data: {
+        title: reqdata.title,
+        content: reqdata.content,
+        language: reqdata.language,
+        username: "marikaa",
+        profileImageUrl: "",
+        authorId: authenticatedUserId,
+      },
+    })
+
+    // Create a new Annotation to the database
+    /*const add_annotation = await db.annotation.create({
+      data: {
+        content: "", 
+        start: 0,
+        end: 1,
+        authorId: authenticatedUserId,
+        postId: newpost.id,
+        post: newpost,
+      },
+    })*/
+
+    return res.status(201);
   } catch (error) {
     return res.status(500).json({ error: "Something went wrong" });
   }
