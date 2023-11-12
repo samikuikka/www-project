@@ -104,23 +104,11 @@ async function POST(req: NextApiRequest, res: NextApiResponse) {
         title: reqdata.title,
         content: reqdata.content,
         language: reqdata.language,
-        username: "marikaa",
+        username: "",
         profileImageUrl: "",
         authorId: authenticatedUserId,
       },
     })
-
-    // Create a new Annotation to the database
-    /*const add_annotation = await db.annotation.create({
-      data: {
-        content: "", 
-        start: 0,
-        end: 1,
-        authorId: authenticatedUserId,
-        postId: newpost.id,
-        post: newpost,
-      },
-    })*/
 
     return res.status(201);
   } catch (error) {
