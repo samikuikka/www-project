@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAuth, useUser } from "@clerk/nextjs";
 
 // This page will be rendered on cliet side only
 const CreatePostPage = () => {
@@ -7,16 +8,22 @@ const CreatePostPage = () => {
   const [content, setContent] = useState("");
   const [language, setLanguage] = useState("");
   const [authorId, setAuthorId] = useState("");
+  const { getToken, isLoaded, isSignedIn, userId } = useAuth();
+  const { user } = useUser();
 
-
-  /*useEffect(() => {
-    savePost();
-  }, []);*/
-
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) { //event: React.FormEvent<HTMLFormElement>
     try {
       event.preventDefault()
-      const body = { 'title': title, 'content': content, 'language': language, 'authorId': authorId};
+      console.log(user)
+      const body = {
+        'title': title,
+        'content': content, 
+        'language': language, 
+        'username': user?.username,
+        'profileImageUrl': user?.imageUrl,
+        'authorId': userId,
+      };
+
       const res = await fetch(`/api/posts`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},

@@ -1,6 +1,16 @@
 // getServerSideProps is a function that runs in the server-side before the page is rendered
+import { GetServerSideProps } from "next";
+import { clerkClient, getAuth, buildClerkProps } from "@clerk/nextjs/server";
+
+
 export async function getServerSideProps() {
     const data = { title: "Server-side Rendering" };
+    /*const { userId } = getAuth(ctx.req);
+
+    if (!userId) {
+      throw new Error("User not authenticated");
+    }
+    const user = userId ? await clerkClient.users.getUser(userId) : undefined;*/
     return { props: { data } };
   }
   

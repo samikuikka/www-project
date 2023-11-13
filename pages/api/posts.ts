@@ -1,6 +1,7 @@
 import { getAuth } from "@clerk/nextjs/server";
 import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/lib/db";
+// import { z } from "zod";
 
 export default async function handler(
   req: NextApiRequest,
@@ -83,10 +84,23 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
+/*const postDtoSchema = z.object({
+  title: z.string(),
+  content: z.string(),
+  language: z.string(),
+  username: z.string(),
+  profileImageUrl: z.string(),
+  userId: z.string(),
+});*/ 
 
 async function POST(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { userId: authenticatedUserId } = getAuth(req);
+    /*
+    const parsedBody = postDtoSchema.safeParse(req.body);
+    if (parsedBody.success === false) {
+      return res.status(400).json({ error: parsedBody.error });
+    }*/
     if (!authenticatedUserId) {
       return res.status(401).json({ error: "Not authenticated" });
     }
@@ -97,18 +111,33 @@ async function POST(req: NextApiRequest, res: NextApiResponse) {
     //console.log(req.body)
     const reqdata = await req.body
     //console.log(reqdata)
-
+    //const user = await currentUser(); // ei toimi!
+    // console.log(user);
     // Create a new Post to the database
     const newpost = await db.post.create({
       data: {
         title: reqdata.title,
         content: reqdata.content,
         language: reqdata.language,
-        username: "",
-        profileImageUrl: "",
+        username: reqdata.username,
+        profileImageUrl: reqdata.imageUrl,
         authorId: authenticatedUserId,
       },
-    })
+    });
+
+
+    /*
+    const newpost = await db.post.create({
+      data: {
+        title: data.title,
+        content: data.content,
+        language: data.language,
+        username: data.username,
+        profileImageUrl: data.profileImageUrl,
+        authorId: authenticatedUserId,
+      },
+    });*/
+
 
     return res.status(201);
   } catch (error) {
