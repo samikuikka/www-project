@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { useRouter } from 'next/navigation';
+import { LANGUAGES } from "@/lib/contants";
 
 
 const CreatePostPage = () => {
@@ -91,7 +92,22 @@ const CreatePostPage = () => {
               <Textarea name="content" value={content} 
               onChange={(e) => setContent(e.target.value)} placeholder='Content of the post'/>
             </div>
-            <Button type="submit" variant="outline">Save</Button>
+            <div className="font-semibold">
+              <select onChange={(e) => setLanguage(e.target.value)}
+              className="flex flex-col gap-2 rounded bg-muted p-2" >
+                <option>Choose Language</option>
+                {LANGUAGES.map(l => {
+                  return (
+                  <option key={l.value}>
+                    {l.label}
+                    </option>
+                    );
+                })}
+              </select>
+            </div>
+            <div className="w-full px-3">
+              <Button type="submit" variant="outline">Save</Button>
+            </div>
           </form>
         </div>
       </div>
