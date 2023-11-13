@@ -138,8 +138,12 @@ async function POST(req: NextApiRequest, res: NextApiResponse) {
       },
     });*/
 
+    // Response for user redirect
+    const response = {
+      data: newpost.id
+    }
 
-    return res.status(201);
+    return res.status(201).json(response);
   } catch (error) {
     return res.status(500).json({ error: "Something went wrong" });
   }

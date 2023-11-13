@@ -2,18 +2,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
+import { useRouter } from 'next/navigation';
 
-// This page will be rendered on cliet side only
+
 const CreatePostPage = () => {
-  //const [data, setData] = useState({ title: "" });
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [language, setLanguage] = useState("");
   const [authorId, setAuthorId] = useState("");
   const { getToken, isLoaded, isSignedIn, userId } = useAuth();
   const { user } = useUser();
+  const router = useRouter();
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) { //event: React.FormEvent<HTMLFormElement>
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     try {
       event.preventDefault()
       console.log(user)
@@ -32,7 +33,11 @@ const CreatePostPage = () => {
         body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error("Something went wrong");
-      //const json = await res.json();
+      
+      // Redirect user to the newly created post
+      const json = await res.json();
+      const url = `/csr/posts/${json.data}`;
+      router.push(url);
     } catch {
       // Here could be a toast
     }
