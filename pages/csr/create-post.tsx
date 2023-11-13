@@ -1,3 +1,5 @@
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
 
@@ -30,7 +32,7 @@ const CreatePostPage = () => {
         body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error("Something went wrong");
-      const json = await res.json();
+      //const json = await res.json();
     } catch {
       // Here could be a toast
     }
@@ -66,27 +68,27 @@ const CreatePostPage = () => {
 
 
   return (
-    <div className=" flex  w-full  flex-col items-center justify-center">
-      <h1 className="text-lg font-semibold">
-        Create a new post
-      </h1>
-      <div>
-        <form onSubmit={handleSubmit}>
-          <div>
-            <input type="text" value={title} 
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder='Title of the post' />
-          </div>
-          <div>
-             {/**  
-            <input type="text" value={content} 
-            onChange={(e) => setContent(e.target.value)}
-            placeholder='Content of the post' />*/}
-            <textarea value={content} 
-            onChange={(e) => setContent(e.target.value)} placeholder='Content of the post'/>
-          </div>
-          <button type="submit">Save</button>
-        </form>
+    <div className="w-full max-w-6xl py-10">
+      <div className="flex w-full flex-col">
+        <h1 className="py-4 text-center text-2xl font-semibold">
+          Create a new post
+        </h1>
+        <div>
+          <form 
+          onSubmit={handleSubmit} 
+          className="flex flex-col gap-2 rounded bg-muted p-2">
+            <div>
+              <Textarea name="title" value={title} 
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder='Title of the post' />
+            </div>
+            <div>
+              <Textarea name="content" value={content} 
+              onChange={(e) => setContent(e.target.value)} placeholder='Content of the post'/>
+            </div>
+            <Button type="submit" variant="outline">Save</Button>
+          </form>
+        </div>
       </div>
     </div>
   );
