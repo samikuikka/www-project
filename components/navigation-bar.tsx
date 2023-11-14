@@ -31,7 +31,7 @@ function NavigationBar() {
           <NavigationMenuItem className="pr-4">
             <NavigationMenuLink href="/">Home</NavigationMenuLink>
           </NavigationMenuItem>
-          {userId && (
+          {userId ? (
             <div className="hidden lg:flex">
               <NavigationMenuItem>
                 <NavigationMenuTrigger>
@@ -95,6 +95,12 @@ function NavigationBar() {
                     </ListItem>
                   </ul>
                 </NavigationMenuContent>
+              </NavigationMenuItem>
+            </div>
+          ) : (
+            <div className="hidden lg:flex">
+              <NavigationMenuItem className="pl-4">
+                <NavigationMenuLink href="/about">About</NavigationMenuLink>
               </NavigationMenuItem>
             </div>
           )}
