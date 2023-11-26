@@ -1,26 +1,33 @@
-// getServerSideProps is a function that runs in the server-side before the page is rendered
 import { GetServerSideProps } from "next";
 import { clerkClient, getAuth, buildClerkProps, User } from "@clerk/nextjs/server";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { FormEvent } from 'react'
 import { LANGUAGES } from "@/lib/contants";
+//import { redirect } from "next/dist/server/api-utils";
+//import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 
 export const getServerSideProps = (async (context) =>  {
     
     const { userId } = getAuth(context.req);
-
+    
     if (!userId) {
       throw new Error("User not authenticated");
     }
-    //const user = userId ? await clerkClient.users.getUser(userId) : undefined;
-    const user = User;
-    const data = { title: "Server-side Rendering", userId:userId };
+    const user = userId ? await clerkClient.users.getUser(userId) : undefined;
+    const data = { 
+      title: "Server-side Rendering",
+      userId:userId, 
+      username: user?.username,
+      userimageUrl: user?.imageUrl,      
+    };
+    // Pass data to the page via props
     return { props: { data } };
   }) satisfies GetServerSideProps;
 
   
-  export default function Page({ data }: { data: { title: string, userId: string} }) {
+  export default function Page({ data }: { data: { title: string, userId: string, username: string, userimageUrl: string} }) {
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
       try {
         event.preventDefault();
@@ -31,9 +38,9 @@ export const getServerSideProps = (async (context) =>  {
           'title': formData.get('title'),
           'content': formData.get('content'), 
           'language': formData.get('language'), 
-          'username': "",//user.username,
-          'profileImageUrl': "", //data.user.imageUrl,
-          'authorId': ""// data.userId,
+          'username': data.username,
+          'profileImageUrl': data.userimageUrl,
+          'authorId': data.userId,
         };
         const res = await fetch(`/api/posts`, {
           method: "POST",
@@ -48,8 +55,9 @@ export const getServerSideProps = (async (context) =>  {
         // Redirect user to the newly created post
         const json = await res.json();
         const url = `/ssr/posts/${json.data}`;
+        console.log(url);
+        //redirect(url);
         // TODO: add routing here
-
       } catch {
         // Here could be a toast
       }
