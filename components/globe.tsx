@@ -3,36 +3,27 @@
 import Globe from "react-globe.gl";
 import { useEffect, useRef, useState } from "react";
 import * as topojson from "topojson";
-import * as THREE from "three";
+import { MeshLambertMaterial, DoubleSide } from "three";
+import globeJson from "@/components/globe.json";
 
 export const GlobeComponent = () => {
-  const [landPolygons, setLandPolygons] = useState([]);
   const [globeSize, setGlobeSize] = useState(getInitialGlobeSize());
+  const polygonData = (
+    topojson.feature(globeJson as any, globeJson.objects.land as any) as any
+  ).features;
 
   const globeEl = useRef<any>();
   const globeContainerRef = useRef<HTMLDivElement>(null);
 
-  const polygonsMaterial = new THREE.MeshLambertMaterial({
+  const polygonsMaterial = new MeshLambertMaterial({
     color: "rgb(33, 29, 29)",
-    side: THREE.DoubleSide,
+    side: DoubleSide,
   });
 
-  const polygonsMaterial2 = new THREE.MeshLambertMaterial({
+  const polygonsMaterial2 = new MeshLambertMaterial({
     color: "rgb(28, 34, 43)",
-    side: THREE.DoubleSide,
+    side: DoubleSide,
   });
-
-  useEffect(() => {
-    // load data
-    fetch("//unpkg.com/world-atlas/land-110m.json")
-      .then((res) => res.json())
-      .then((landTopo) => {
-        setLandPolygons(
-          // @ts-ignore
-          topojson.feature(landTopo, landTopo.objects.land).features,
-        );
-      });
-  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -78,7 +69,7 @@ export const GlobeComponent = () => {
           ref={globeEl}
           width={globeSize.width}
           height={globeSize.width}
-          polygonsData={landPolygons}
+          polygonsData={polygonData}
           polygonCapMaterial={polygonsMaterial}
           globeMaterial={polygonsMaterial2}
           backgroundColor="rgba(0,0,0,0)"

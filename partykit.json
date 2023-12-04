@@ -1,8 +1,8 @@
 {
   "name": "www-project-party",
   "main": "party/index.ts",
-  "compatibilityDate": "2023-10-22",
   "parties": {
     "chatroom": "party/chatRoom.ts"
-  }
+  },
+  "compatibilityDate": "2023-12-02"
 }

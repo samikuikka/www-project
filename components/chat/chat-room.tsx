@@ -15,7 +15,6 @@ interface ChatRoomProps {
 
 const ChatRoom: React.FC<ChatRoomProps> = ({ room }) => {
   const [messages, setMessages] = useState<Message[]>([]);
-
   const { getToken, userId } = useAuth();
   const socket = usePartySocket({
     host: PARTYKIT_HOST,
