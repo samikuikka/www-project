@@ -99,8 +99,8 @@ function NavigationBar() {
                     <ListItem title="Test page" href={`/rsc/test`}>
                       RSC test
                     </ListItem>
-                    <ListItem title="About" href={`/about`}>
-                      About us
+                    <ListItem title="About" href={`/rsc/about`}>
+                      About us and the project
                     </ListItem>
                   </ul>
                 </NavigationMenuContent>
