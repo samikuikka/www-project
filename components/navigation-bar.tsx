@@ -31,7 +31,7 @@ function NavigationBar() {
           <NavigationMenuItem className="pr-4">
             <NavigationMenuLink href="/">Home</NavigationMenuLink>
           </NavigationMenuItem>
-          {userId && (
+          {userId ? (
             <div className="hidden lg:flex">
               <NavigationMenuItem>
                 <NavigationMenuTrigger>
@@ -53,6 +53,9 @@ function NavigationBar() {
                     </ListItem>
                     <ListItem title="Create post" href={`/csr/create-post`}>
                       Create a new post
+                    </ListItem>
+                    <ListItem title="About" href={`/csr/about`}>
+                      About us and the project
                     </ListItem>
                   </ul>
                 </NavigationMenuContent>
@@ -78,6 +81,9 @@ function NavigationBar() {
                     <ListItem title="Create post" href={`/ssr/create-post`}>
                       Create a new post
                     </ListItem>
+                    <ListItem title="About" href={`/ssr/about`}>
+                      About us and the project
+                    </ListItem>
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -102,8 +108,17 @@ function NavigationBar() {
                     <ListItem title="Create post" href={`/rsc/create-post`}>
                       Create a new post
                     </ListItem>
+                    <ListItem title="About" href={`/rsc/about`}>
+                      About us and the project
+                    </ListItem>
                   </ul>
                 </NavigationMenuContent>
+              </NavigationMenuItem>
+            </div>
+          ) : (
+            <div className="hidden lg:flex">
+              <NavigationMenuItem className="pl-4">
+                <NavigationMenuLink href="/about">About</NavigationMenuLink>
               </NavigationMenuItem>
             </div>
           )}

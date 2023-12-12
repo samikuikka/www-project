@@ -34,7 +34,8 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
     }
 
     return res.status(200).json(post);
-  } catch {
+  } catch (_e) {
+    console.log(_e);
     return res.status(500).json({ message: "Internal server error" });
   }
 }
