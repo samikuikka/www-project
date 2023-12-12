@@ -4,14 +4,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { FormEvent } from 'react'
 import { LANGUAGES } from "@/lib/contants";
-//import { redirect } from "next/dist/server/api-utils";
-//import { redirect } from 'next/navigation'
 import { useRouter } from 'next/navigation';
 
 export const getServerSideProps = (async (context) =>  {
     
     const { userId } = getAuth(context.req);
-    
     if (!userId) {
       throw new Error("User not authenticated");
     }
@@ -20,20 +17,20 @@ export const getServerSideProps = (async (context) =>  {
       title: "Server-side Rendering",
       userId:userId, 
       username: user?.username,
-      userimageUrl: user?.imageUrl,      
+      userimageUrl: user?.imageUrl,
     };
     // Pass data to the page via props
-    return { props: { data } };
+    return { props: { data} };
   }) satisfies GetServerSideProps;
 
   
   export default function Page({ data }: { data: { title: string, userId: string, username: string, userimageUrl: string} }) {
+    const router = useRouter();
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
       try {
         event.preventDefault();
         
         const formData = new FormData(event.currentTarget);
-        console.log(formData);
         const body = {
           'title': formData.get('title'),
           'content': formData.get('content'), 
@@ -49,15 +46,10 @@ export const getServerSideProps = (async (context) =>  {
         });
         if (!res.ok) throw new Error("Something went wrong");
     
-        // Handle response if necessary
-        //const data = await response.json()
-        // ...
         // Redirect user to the newly created post
         const json = await res.json();
         const url = `/ssr/posts/${json.data}`;
-        console.log(url);
-        //redirect(url);
-        // TODO: add routing here
+        router.push(url);
       } catch {
         // Here could be a toast
       }
