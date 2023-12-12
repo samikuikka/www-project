@@ -51,6 +51,9 @@ function NavigationBar() {
                     <ListItem title="Test page" href={`/csr/test`}>
                       CSR test page
                     </ListItem>
+                    <ListItem title="Create post" href={`/csr/create-post`}>
+                      Create a new post
+                    </ListItem>
                     <ListItem title="About" href={`/csr/about`}>
                       About us and the project
                     </ListItem>
@@ -75,6 +78,9 @@ function NavigationBar() {
                     <ListItem title="Test page" href={`/ssr/test`}>
                       SSR test page
                     </ListItem>
+                    <ListItem title="Create post" href={`/ssr/create-post`}>
+                      Create a new post
+                    </ListItem>
                     <ListItem title="About" href={`/ssr/about`}>
                       About us and the project
                     </ListItem>
@@ -98,6 +104,9 @@ function NavigationBar() {
                     </ListItem>
                     <ListItem title="Test page" href={`/rsc/test`}>
                       RSC test
+                    </ListItem>
+                    <ListItem title="Create post" href={`/rsc/create-post`}>
+                      Create a new post
                     </ListItem>
                     <ListItem title="About" href={`/rsc/about`}>
                       About us and the project
