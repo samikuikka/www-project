@@ -60,11 +60,8 @@ export default async function CreatePost({ params }: CreatePostProps) {
 
 
   return (
-    <div className="w-full max-w-6xl py-10">
-      <div className="flex w-full flex-col">
-        <h1 className="py-4 text-center text-2xl font-semibold">
-          Create a new post
-        </h1>
+    <div className="flex h-full w-full flex-col items-center justify-center px-0 py-10 sm:px-10 ">
+      <div className="w-full max-w-5xl rounded-md border-2 border-border">
         <div>
           <CreatePostPage></CreatePostPage>
         </div>
